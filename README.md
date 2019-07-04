@@ -71,12 +71,12 @@ String content = qr.generateContent();
 qr.draw(300, 300, new File("D:\\qr.png")); // width 300 x height 300 pixels | save to D:\qr.png
 ```
 
-  2.2.2. เป็น Base64 String
+  2.2.2. เป็น Base64 String (PNG)
 ```java
 qr.drawToBase64(300, 300); // width 300 x height 300 pixels
 ```
 
-  2.2.3. เป็น OutputStream
+  2.2.3. เป็น OutputStream (ByteOutputStream)
 ```java
 qr.drawToOutputStream(400, 400); // width 400 x height 400 pixels
 ```
