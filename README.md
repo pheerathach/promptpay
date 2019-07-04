@@ -51,7 +51,8 @@ ThaiQRPromptPay qr = new ThaiQRPromptPay.Builder().dynamicQR().billPayment().bil
 ```
 
 # ข้อพึงสังเกต
-- QR ที่ใช้ชำระครั้งเดียวสำหรับ Bill Payment ควรระบุเป็น dynamicQR()
+- QR ที่ถูกสร้างขึ้นเพื่อให้ใช้ได้หลายครั้ง คือ staticQR()
+- QR ที่ถูกสร้างขึ้นเพื่อให้ใช้ได้แค่ครั้งเดียว คือ dynamicQR()
 
 # วิธีนำไปใช้
 1. Import .jar ของไลบราลีนี้เข้าสู่ project [ดาวน์โหลดได้ที่นี่](https://github.com/pheerathach/promptpay/raw/master/promptpay.jar)
