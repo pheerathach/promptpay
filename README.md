@@ -82,6 +82,14 @@ qr.drawToOutputStream(400, 400); // width 400 x height 400 pixels
 
 https://www.bot.or.th/Thai/FIPCS/Documents/FPG/2562/ThaiPDF/25620084.pdf
 
+- ZXing 3.4.0
+
+https://github.com/zxing/zxing
+
+- Apache Commons Codec 1.12
+
+https://commons.apache.org/proper/commons-codec/
+
 - ขอขอบคุณ คุณ thedayofcondor สำหรับ method ในการหา CRC16
 
 https://stackoverflow.com/questions/13209364/convert-c-crc16-to-java-crc16/13209435
