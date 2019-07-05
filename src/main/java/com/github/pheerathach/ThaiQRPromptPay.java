@@ -11,7 +11,6 @@ import org.apache.commons.codec.binary.Base64;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
@@ -132,8 +131,8 @@ public class ThaiQRPromptPay {
         return new String(Base64.encodeBase64(imageData));
     }
 
-    public OutputStream drawToOutputStream(int width, int height) throws IOException, WriterException {
-        return generateQRCodeImage(generateContent(), width, height);
+    public byte[] drawToByteArray(int width, int height) throws IOException, WriterException {
+        return generateQRCodeImage(generateContent(), width, height).getBytes();
     }
 
     public static class Builder {
