@@ -76,9 +76,9 @@ qr.draw(300, 300, new File("D:\\qr.png")); // width 300 x height 300 pixels | sa
 qr.drawToBase64(300, 300); // width 300 x height 300 pixels
 ```
 
-  2.2.3. เป็น OutputStream (ByteOutputStream)
+  2.2.3. เป็น byte[]
 ```java
-qr.drawToOutputStream(400, 400); // width 400 x height 400 pixels
+qr.drawToByteArray(400, 400); // width 400 x height 400 pixels
 ```
 
 # เอกสารอ้างอิง
