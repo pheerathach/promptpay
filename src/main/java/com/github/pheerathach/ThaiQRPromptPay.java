@@ -5,9 +5,9 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 import org.apache.commons.codec.binary.Base64;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -61,14 +61,14 @@ public class ThaiQRPromptPay {
         this.countryCode = builder.countryCode;
     }
 
-    private static ByteOutputStream generateQRCodeImage(String text, int width, int height)
+    private static ByteArrayOutputStream generateQRCodeImage(String text, int width, int height)
             throws WriterException, IOException {
-        ByteOutputStream byteOutputStream = new ByteOutputStream();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
 
-        MatrixToImageWriter.writeToStream(bitMatrix, "PNG", byteOutputStream);
-        return byteOutputStream;
+        MatrixToImageWriter.writeToStream(bitMatrix, "PNG", byteArrayOutputStream);
+        return byteArrayOutputStream;
     }
 
     public String generateContent() {
@@ -122,16 +122,16 @@ public class ThaiQRPromptPay {
 
     public void draw(int width, int height, File file) throws Exception {
         FileOutputStream fileOutputStream = new FileOutputStream(file);
-        fileOutputStream.write(generateQRCodeImage(generateContent(), width, height).getBytes());
+        fileOutputStream.write(generateQRCodeImage(generateContent(), width, height).toByteArray());
     }
 
     public String drawToBase64(int width, int height) throws Exception {
-        byte[] imageData = generateQRCodeImage(generateContent(), width, height).getBytes();
+        byte[] imageData = generateQRCodeImage(generateContent(), width, height).toByteArray();
         return new String(Base64.encodeBase64(imageData));
     }
 
     public byte[] drawToByteArray(int width, int height) throws IOException, WriterException {
-        return generateQRCodeImage(generateContent(), width, height).getBytes();
+        return generateQRCodeImage(generateContent(), width, height).toByteArray();
     }
 
     public static class Builder {
