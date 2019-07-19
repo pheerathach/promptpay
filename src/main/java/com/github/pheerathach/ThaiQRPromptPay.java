@@ -76,29 +76,28 @@ public class ThaiQRPromptPay {
         stringBuilder.append(generateField(0, PAYLOAD_FORMAT_INDICATOR));
         stringBuilder.append(generateField(1, usageType));
 
-        String content = "";
-        content = generateField(0, acquirerId);
+        StringBuilder content = new StringBuilder(generateField(0, acquirerId));
         if (paymentField == 29) {
             if (mobileNumber != null) {
                 if (mobileNumber.startsWith("0")) {
                     mobileNumber = mobileNumber.substring(1);
                 }
-                content += generateField(1, "00" + DEFAULT_COUNTRY_CODE_TEL + mobileNumber);
+                content.append(generateField(1, "00" + DEFAULT_COUNTRY_CODE_TEL + mobileNumber));
             } else if (nationalId != null) {
-                content += generateField(2, nationalId);
+                content.append(generateField(2, nationalId));
             } else if (eWalletId != null) {
-                content += generateField(3, eWalletId);
+                content.append(generateField(3, eWalletId));
             } else if (bankAccount != null) {
-                content += generateField(4, bankAccount);
+                content.append(generateField(4, bankAccount));
             }
         } else if (paymentField == 30) {
-            content += generateField(1, billerId);
-            content += generateField(2, ref1);
+            content.append(generateField(1, billerId));
+            content.append(generateField(2, ref1));
             if (ref2 != null) {
-                content += generateField(3, ref2);
+                content.append(generateField(3, ref2));
             }
         }
-        stringBuilder.append(generateField(paymentField, content));
+        stringBuilder.append(generateField(paymentField, content.toString()));
 
         stringBuilder.append(generateField(53, currencyCode));
         if (amount != null) {
@@ -108,7 +107,7 @@ public class ThaiQRPromptPay {
         if (ref3 != null) {
             stringBuilder.append(generateField(62, generateField(7, ref3)));
         }
-        stringBuilder.append("6304" + (Integer.toHexString(Helper.crc16((stringBuilder.toString() + "6304").getBytes()))).toUpperCase());
+        stringBuilder.append("6304").append((Integer.toHexString(Helper.crc16((stringBuilder.toString() + "6304").getBytes()))).toUpperCase());
         return stringBuilder.toString();
     }
 
