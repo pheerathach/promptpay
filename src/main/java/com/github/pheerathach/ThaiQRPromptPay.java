@@ -120,12 +120,12 @@ public class ThaiQRPromptPay {
         return String.format("%02d", fieldId) + String.format("%02d", content.length()) + content;
     }
 
-    public void draw(int width, int height, File file) throws Exception {
+    public void draw(int width, int height, File file) throws IOException, WriterException {
         FileOutputStream fileOutputStream = new FileOutputStream(file);
         fileOutputStream.write(generateQRCodeImage(generateContent(), width, height).toByteArray());
     }
 
-    public String drawToBase64(int width, int height) throws Exception {
+    public String drawToBase64(int width, int height) throws IOException, WriterException {
         byte[] imageData = generateQRCodeImage(generateContent(), width, height).toByteArray();
         return new String(Base64.encodeBase64(imageData));
     }
