@@ -107,7 +107,7 @@ public class ThaiQRPromptPay {
         if (ref3 != null) {
             stringBuilder.append(generateField(62, generateField(7, ref3)));
         }
-        stringBuilder.append("6304" + (Integer.toHexString(Helper.crc16((stringBuilder.toString() + "6304").getBytes()))));
+        stringBuilder.append("6304" + (Integer.toHexString(Helper.crc16((stringBuilder.toString() + "6304").getBytes())).toUpperCase()));
         return stringBuilder.toString();
     }
 
@@ -170,6 +170,8 @@ public class ThaiQRPromptPay {
 
         public interface BillPaymentBuilderOptionalDetail extends BuildReady {
             BillPaymentBuilderOptionalDetail amount(BigDecimal amount);
+
+            BillPaymentBuilderOptionalDetail amount(String amount);
 
             BillPaymentBuilderOptionalDetail ref2(String ref2);
 
@@ -298,6 +300,10 @@ public class ThaiQRPromptPay {
                     validateAmount(amount);
                     this.amount = amount;
                     return this;
+                }
+
+                public BillPaymentBuilderOptionalDetail amount(String amount) {
+                    return amount(new BigDecimal(amount));
                 }
 
                 public ThaiQRPromptPay build() {
