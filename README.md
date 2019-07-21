@@ -7,7 +7,7 @@
 **ไลบรารีนี้ต้องการ Java เวอร์ชัน 8 ขึ้นไป**
 
 # การใช้งาน
-1. QR สำหรับบุคคลธรรมดารับโอนเงิน (Credit Transfer)
+1. QR สำหรับบุคคลธรรมดารับโอนเงิน (Credit Transfer) Tag 29
 
 ```java
 // รับชำระผ่าน PromptPay เบอร์ 081-234-5678 จำนวนเงิน: <ให้ผู้ชำระระบุ>
@@ -29,7 +29,7 @@ ThaiQRPromptPay qr = new ThaiQRPromptPay.Builder().staticQR().creditTransfer().n
 ThaiQRPromptPay qr = new ThaiQRPromptPay.Builder().staticQR().creditTransfer().eWalletId("000000000000000").amount(new BigDecimal("0.01")).build();
 ```
 
-2. QR สำหรับธุรกิจรับชำระเงิน (Bill Payment)
+2. QR สำหรับธุรกิจรับชำระเงิน (Bill Payment) Tag 30
 
 ```java
 // รับชำระผ่าน PromptPay เลขประจำตัวผู้เสียภาษี 0000000000000 + 99 (SUFFIX 2 หลัก)
