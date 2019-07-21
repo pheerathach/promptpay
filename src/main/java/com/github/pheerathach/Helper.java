@@ -3,6 +3,11 @@ package com.github.pheerathach;
 import java.math.BigDecimal;
 
 class Helper {
+
+    private Helper() {
+
+    }
+
     // Special Thanks to thedayofcondor @ https://stackoverflow.com/questions/13209364/convert-c-crc16-to-java-crc16/13209435
     protected static int crc16(final byte[] buffer) {
         int crc = 0xFFFF;

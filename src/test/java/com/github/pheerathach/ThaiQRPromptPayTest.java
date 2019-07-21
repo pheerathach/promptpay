@@ -15,7 +15,7 @@ public class ThaiQRPromptPayTest {
                 .mobileNumber("0000000000")
                 .amount(new BigDecimal("100"))
                 .build();
-        Assert.assertEquals(qr.generateContent(), "00020101021129370016A0000006770101110113006600000000053037645406100.005802TH6304D19E");
+        Assert.assertEquals("00020101021129370016A0000006770101110113006600000000053037645406100.005802TH6304D19E", qr.generateContent());
     }
 
     @Test
@@ -25,7 +25,7 @@ public class ThaiQRPromptPayTest {
                 .creditTransfer()
                 .mobileNumber("0000000000")
                 .build();
-        Assert.assertEquals(qr.generateContent(), "00020101021129370016A0000006770101110113006600000000053037645802TH630456EA");
+        Assert.assertEquals("00020101021129370016A0000006770101110113006600000000053037645802TH630456EA", qr.generateContent());
     }
 
     @Test
@@ -36,7 +36,7 @@ public class ThaiQRPromptPayTest {
                 .mobileNumber("0000000000")
                 .amount(new BigDecimal("0"))
                 .build();
-        Assert.assertEquals(qr.generateContent(), "00020101021129370016A00000067701011101130066000000000530376454040.005802TH6304FB56");
+        Assert.assertEquals("00020101021129370016A00000067701011101130066000000000530376454040.005802TH6304FB56", qr.generateContent());
     }
 
     @Test(expected = IllegalStateException.class)

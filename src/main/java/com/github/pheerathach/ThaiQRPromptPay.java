@@ -122,7 +122,11 @@ public class ThaiQRPromptPay {
 
     public void draw(int width, int height, File file) throws IOException, WriterException {
         FileOutputStream fileOutputStream = new FileOutputStream(file);
-        fileOutputStream.write(generateQRCodeImage(generateContent(), width, height).toByteArray());
+        try {
+            fileOutputStream.write(generateQRCodeImage(generateContent(), width, height).toByteArray());
+        } finally {
+            fileOutputStream.close();
+        }
     }
 
     public String drawToBase64(int width, int height) throws IOException, WriterException {
@@ -135,7 +139,7 @@ public class ThaiQRPromptPay {
     }
 
     public static class Builder {
-        public String usageType;
+        private String usageType;
         protected String currencyCode = DEFAULT_CURRENCY_CODE;
         protected String countryCode = DEFAULT_COUNTRY_CODE;
         protected SelectPromptPayTypeBuilder selectPromptPayTypeBuilder = new SelectPromptPayTypeBuilder();
@@ -196,6 +200,10 @@ public class ThaiQRPromptPay {
             ThaiQRPromptPay build();
         }
 
+        interface SelectPromptPayType {
+
+        }
+
         public class SelectPromptPayTypeBuilder {
             protected SelectPromptPayType selectPromptPayType;
 
@@ -211,10 +219,7 @@ public class ThaiQRPromptPay {
                 return billPaymentBuilder;
             }
 
-            abstract class SelectPromptPayType {
-            }
-
-            private class CreditTransferBuilder extends SelectPromptPayType implements CreditTransferBuilderIdenifier, CreditTransferBuilderAmount {
+            private class CreditTransferBuilder implements SelectPromptPayType, CreditTransferBuilderIdenifier, CreditTransferBuilderAmount {
                 private String mobileNumber;
                 private String nationalId;
                 private String eWalletId;
@@ -260,7 +265,7 @@ public class ThaiQRPromptPay {
                 }
             }
 
-            private class BillPaymentBuilder extends SelectPromptPayType implements BillPaymentBuilderBillerId, BillPaymentBuilderRef1, BillPaymentBuilderOptionalDetail {
+            private class BillPaymentBuilder implements SelectPromptPayType, BillPaymentBuilderBillerId, BillPaymentBuilderRef1, BillPaymentBuilderOptionalDetail {
                 private String billerId;
                 private String ref1;
                 private String ref2;

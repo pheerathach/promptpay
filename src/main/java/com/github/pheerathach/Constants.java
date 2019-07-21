@@ -1,6 +1,7 @@
 package com.github.pheerathach;
 
 class Constants {
+
     protected static final String PAYLOAD_FORMAT_INDICATOR = "01";
     protected static final String STATIC_QR_CODE = "11";
     protected static final String DYNAMIC_QR_CODE = "12";
@@ -11,4 +12,8 @@ class Constants {
     protected static final String CREDIT_TRANSFER_ACQUIRER_ID = "A000000677010111";
     protected static final int BILL_PAYMENT_DATA_FIELD_ID = 30;
     protected static final String BILL_PAYMENT_DATA_ACQUIRER_ID = "A000000677010112";
+
+    private Constants() {
+
+    }
 }
