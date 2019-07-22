@@ -17,6 +17,9 @@ import java.text.DecimalFormat;
 import static com.github.pheerathach.Constants.*;
 import static com.github.pheerathach.Helper.*;
 
+/**
+ * @author pheerathach
+ */
 public class ThaiQRPromptPay {
     private static final DecimalFormat moneyFormat = new DecimalFormat("0.00");
 
@@ -71,6 +74,10 @@ public class ThaiQRPromptPay {
         return byteArrayOutputStream;
     }
 
+    /**
+     * Returns the content for further QR generation
+     * @return
+     */
     public String generateContent() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(generateField(0, PAYLOAD_FORMAT_INDICATOR));
@@ -111,6 +118,10 @@ public class ThaiQRPromptPay {
         return stringBuilder.toString();
     }
 
+    /**
+     * Return the content for further QR generation
+     * @return
+     */
     @Override
     public String toString() {
         return generateContent();
@@ -120,6 +131,14 @@ public class ThaiQRPromptPay {
         return String.format("%02d", fieldId) + String.format("%02d", content.length()) + content;
     }
 
+    /**
+     * Draw the QR code image to the specified path with specified width and height.
+     * @param width
+     * @param height
+     * @param file
+     * @throws IOException
+     * @throws WriterException
+     */
     public void draw(int width, int height, File file) throws IOException, WriterException {
         FileOutputStream fileOutputStream = new FileOutputStream(file);
         try {
@@ -129,11 +148,27 @@ public class ThaiQRPromptPay {
         }
     }
 
+    /**
+     * Draw the QR code image to Base64 string.
+     * @param width
+     * @param height
+     * @return
+     * @throws IOException
+     * @throws WriterException
+     */
     public String drawToBase64(int width, int height) throws IOException, WriterException {
         byte[] imageData = generateQRCodeImage(generateContent(), width, height).toByteArray();
         return new String(Base64.encodeBase64(imageData));
     }
 
+    /**
+     * Draw the QR code image to byte array.
+     * @param width
+     * @param height
+     * @return
+     * @throws IOException
+     * @throws WriterException
+     */
     public byte[] drawToByteArray(int width, int height) throws IOException, WriterException {
         return generateQRCodeImage(generateContent(), width, height).toByteArray();
     }
@@ -144,11 +179,23 @@ public class ThaiQRPromptPay {
         protected String countryCode = DEFAULT_COUNTRY_CODE;
         protected SelectPromptPayTypeBuilder selectPromptPayTypeBuilder = new SelectPromptPayTypeBuilder();
 
+        /**
+         * Specify currency code
+         * Default is Thai Baht (764)
+         * @param currencyCode
+         * @return
+         */
         public Builder currencyCode(String currencyCode) {
             this.currencyCode = currencyCode;
             return this;
         }
 
+        /**
+         * Specify country code
+         * Default is Thailand (TH)
+         * @param countryCode
+         * @return
+         */
         public Builder countryCode(String countryCode) {
             this.countryCode = countryCode;
             return this;
@@ -164,15 +211,15 @@ public class ThaiQRPromptPay {
             return selectPromptPayTypeBuilder;
         }
 
-        public interface BillPaymentBuilderBillerId {
+        private interface BillPaymentBuilderBillerId {
             BillPaymentBuilderRef1 billerId(String billerId);
         }
 
-        public interface BillPaymentBuilderRef1 {
+        private interface BillPaymentBuilderRef1 {
             BillPaymentBuilderOptionalDetail ref1(String ref1);
         }
 
-        public interface BillPaymentBuilderOptionalDetail extends BuildReady {
+        private interface BillPaymentBuilderOptionalDetail extends BuildReady {
             BillPaymentBuilderOptionalDetail amount(BigDecimal amount);
 
             BillPaymentBuilderOptionalDetail amount(String amount);
@@ -182,7 +229,7 @@ public class ThaiQRPromptPay {
             BillPaymentBuilderOptionalDetail ref3(String ref3);
         }
 
-        public interface CreditTransferBuilderIdenifier {
+        private interface CreditTransferBuilderIdenifier {
             CreditTransferBuilderAmount mobileNumber(String mobileNumber);
 
             CreditTransferBuilderAmount nationalId(String nationalId);
@@ -192,27 +239,35 @@ public class ThaiQRPromptPay {
             CreditTransferBuilderAmount bankAccount(String bankAccount);
         }
 
-        public interface CreditTransferBuilderAmount extends BuildReady {
+        private interface CreditTransferBuilderAmount extends BuildReady {
             BuildReady amount(BigDecimal amount);
         }
 
-        public interface BuildReady {
+        private interface BuildReady {
             ThaiQRPromptPay build();
         }
 
-        interface SelectPromptPayType {
+        private interface SelectPromptPayType {
 
         }
 
         public class SelectPromptPayTypeBuilder {
             protected SelectPromptPayType selectPromptPayType;
 
-            public CreditTransferBuilderIdenifier creditTransfer() {
+            /**
+             * Specify PromptPay Type as Credit Transfer (Tag 29)
+             * @return
+             */
+            private CreditTransferBuilderIdenifier creditTransfer() {
                 CreditTransferBuilder creditTransferBuilder = new CreditTransferBuilder();
                 this.selectPromptPayType = creditTransferBuilder;
                 return creditTransferBuilder;
             }
 
+            /**
+             * Specify PromptPay Type as Bill Payment (Tag 30)
+             * @return
+             */
             public BillPaymentBuilderBillerId billPayment() {
                 BillPaymentBuilder billPaymentBuilder = new BillPaymentBuilder();
                 this.selectPromptPayType = billPaymentBuilder;
@@ -226,6 +281,11 @@ public class ThaiQRPromptPay {
                 private String bankAccount;
                 private BigDecimal amount;
 
+                /**
+                 * Specify mobile number
+                 * @param mobileNumber Mobile Number
+                 * @return
+                 */
                 public CreditTransferBuilderAmount mobileNumber(String mobileNumber) {
                     validateNumeric("Mobile Number", mobileNumber);
                     validateLength("Mobile Number", mobileNumber, 10);
@@ -233,6 +293,11 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
+                /**
+                 * Specify Thai National ID
+                 * @param nationalId Thai National ID
+                 * @return
+                 */
                 public CreditTransferBuilderAmount nationalId(String nationalId) {
                     validateNumeric("National ID/Tax ID", nationalId);
                     validateLength("National ID/Tax ID", nationalId, 13);
@@ -240,6 +305,11 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
+                /**
+                 * Specify E-Wallet ID
+                 * @param eWalletId E-Wallet ID
+                 * @return
+                 */
                 public CreditTransferBuilderAmount eWalletId(String eWalletId) {
                     validateNumeric("E-Wallet ID", eWalletId);
                     validateLength("E-Wallet ID", eWalletId, 15);
@@ -247,6 +317,11 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
+                /**
+                 * Specify bank account number
+                 * @param bankAccount Bank Account Number
+                 * @return
+                 */
                 public CreditTransferBuilderAmount bankAccount(String bankAccount) {
                     validateNumeric("Bank Account", bankAccount);
                     validateLength("Bank Account", bankAccount, 43);
@@ -254,12 +329,30 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
+                /**
+                 * Specify amount in BigDecimal
+                 * @param amount
+                 * @return
+                 */
                 public BuildReady amount(BigDecimal amount) {
                     validateAmount(amount);
                     this.amount = amount;
                     return this;
                 }
 
+                /**
+                 * Specify amount in String
+                 * @param amount
+                 * @return
+                 */
+                public BuildReady amount(String amount) {
+                    return amount(new BigDecimal(amount));
+                }
+
+                /**
+                 * Construct ThaiQRPromptPay object
+                 * @return
+                 */
                 public ThaiQRPromptPay build() {
                     return new ThaiQRPromptPay(Builder.this);
                 }
@@ -272,6 +365,11 @@ public class ThaiQRPromptPay {
                 private String ref3;
                 private BigDecimal amount;
 
+                /**
+                 * Specify Tax ID (10 or 13 digits) + Suffix 2 digits
+                 * @param billerId
+                 * @return
+                 */
                 public BillPaymentBuilderRef1 billerId(String billerId) {
                     validateNumeric("Biller ID", billerId);
                     validateLength("Biller ID", billerId, 15);
@@ -279,6 +377,11 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
+                /**
+                 * Specify Reference 1
+                 * @param ref1
+                 * @return
+                 */
                 public BillPaymentBuilderOptionalDetail ref1(String ref1) {
                     validateAlphanumeric("Reference 1", ref1);
                     validateLength("Reference 1", ref1, 15);
@@ -286,6 +389,11 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
+                /**
+                 * Specify Reference 2
+                 * @param ref2
+                 * @return
+                 */
                 public BillPaymentBuilderOptionalDetail ref2(String ref2) {
                     validateAlphanumeric("Reference 2", ref2);
                     validateLength("Reference 2", ref2, 20);
@@ -293,6 +401,11 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
+                /**
+                 * Specify Terminal ID or Reference 3
+                 * @param ref3
+                 * @return
+                 */
                 public BillPaymentBuilderOptionalDetail ref3(String ref3) {
                     validateAlphanumeric("Reference 3", ref3);
                     validateLength("Terminal ID/Reference 3", ref3, 26);
@@ -300,6 +413,11 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
+                /**
+                 * Specify amount in BigDecimal
+                 * @param amount
+                 * @return
+                 */
                 public BillPaymentBuilderOptionalDetail amount(BigDecimal amount) {
                     validateLength("Amount", moneyFormat.format(amount), 13);
                     validateAmount(amount);
@@ -307,10 +425,19 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
+                /**
+                 * Specify amount in String
+                 * @param amount
+                 * @return
+                 */
                 public BillPaymentBuilderOptionalDetail amount(String amount) {
                     return amount(new BigDecimal(amount));
                 }
 
+                /**
+                 * Construct ThaiQRPromptPay object
+                 * @return
+                 */
                 public ThaiQRPromptPay build() {
                     return new ThaiQRPromptPay(Builder.this);
                 }
