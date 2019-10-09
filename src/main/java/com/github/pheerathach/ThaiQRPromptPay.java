@@ -223,6 +223,7 @@ public class ThaiQRPromptPay {
                 private String bankAccount;
                 private BigDecimal amount;
 
+                @Override
                 public CreditTransferBuilderAmount mobileNumber(String mobileNumber) {
                     validateNumeric("Mobile Number", mobileNumber);
                     validateLength("Mobile Number", mobileNumber, 10);
@@ -230,6 +231,7 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
+                @Override
                 public CreditTransferBuilderAmount nationalId(String nationalId) {
                     validateNumeric("National ID/Tax ID", nationalId);
                     validateLength("National ID/Tax ID", nationalId, 13);
@@ -237,6 +239,7 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
+                @Override
                 public CreditTransferBuilderAmount eWalletId(String eWalletId) {
                     validateNumeric("E-Wallet ID", eWalletId);
                     validateLength("E-Wallet ID", eWalletId, 15);
@@ -244,6 +247,7 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
+                @Override
                 public CreditTransferBuilderAmount bankAccount(String bankAccount) {
                     validateNumeric("Bank Account", bankAccount);
                     validateLength("Bank Account", bankAccount, 43);
@@ -251,12 +255,14 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
+                @Override
                 public BuildReady amount(BigDecimal amount) {
                     validateAmount(amount);
                     this.amount = amount;
                     return this;
                 }
 
+                @Override
                 public ThaiQRPromptPay build() {
                     return new ThaiQRPromptPay(Builder.this);
                 }
@@ -269,6 +275,7 @@ public class ThaiQRPromptPay {
                 private String ref3;
                 private BigDecimal amount;
 
+                @Override
                 public BillPaymentBuilderRef1 billerId(String billerId) {
                     validateNumeric("Biller ID", billerId);
                     validateLength("Biller ID", billerId, 15);
@@ -276,6 +283,7 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
+                @Override
                 public BillPaymentBuilderOptionalDetail ref1(String ref1) {
                     validateAlphanumeric("Reference 1", ref1);
                     validateLength("Reference 1", ref1, 15);
@@ -283,6 +291,7 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
+                @Override
                 public BillPaymentBuilderOptionalDetail ref2(String ref2) {
                     validateAlphanumeric("Reference 2", ref2);
                     validateLength("Reference 2", ref2, 20);
@@ -290,6 +299,7 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
+                @Override
                 public BillPaymentBuilderOptionalDetail ref3(String ref3) {
                     validateAlphanumeric("Reference 3", ref3);
                     validateLength("Terminal ID/Reference 3", ref3, 26);
@@ -297,6 +307,7 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
+                @Override
                 public BillPaymentBuilderOptionalDetail amount(BigDecimal amount) {
                     validateLength("Amount", MONEY_FORMAT.format(amount), 13);
                     validateAmount(amount);
@@ -304,10 +315,12 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
+                @Override
                 public BillPaymentBuilderOptionalDetail amount(String amount) {
                     return amount(new BigDecimal(amount));
                 }
 
+                @Override
                 public ThaiQRPromptPay build() {
                     return new ThaiQRPromptPay(Builder.this);
                 }
