@@ -17,15 +17,15 @@ import java.text.DecimalFormat;
 import static com.github.pheerathach.Constants.*;
 import static com.github.pheerathach.Helper.*;
 
-/**
- * @author pheerathach
- */
 public class ThaiQRPromptPay {
-    private static final DecimalFormat moneyFormat = new DecimalFormat("0.00");
+    private static final DecimalFormat MONEY_FORMAT = new DecimalFormat("0.00");
 
-    private Integer paymentField;
-    private String usageType;
-    private String acquirerId;
+    private final Integer PAYMENT_FIELD;
+    private final String USAGE_TYPE;
+    private final String ACQUIRER_ID;
+    private final BigDecimal AMOUNT;
+    private final String CURRENCY_CODE;
+    private final String COUNTRY_CODE;
     private String billerId;
     private String mobileNumber;
     private String nationalId;
@@ -34,34 +34,31 @@ public class ThaiQRPromptPay {
     private String ref1;
     private String ref2;
     private String ref3;
-    private BigDecimal amount;
-    private String currencyCode;
-    private String countryCode;
 
     private ThaiQRPromptPay(Builder builder) {
         if (builder.selectPromptPayTypeBuilder.selectPromptPayType instanceof Builder.SelectPromptPayTypeBuilder.CreditTransferBuilder) {
-            this.paymentField = CREDIT_TRANSFER_DATA_FIELD_ID;
-            this.acquirerId = CREDIT_TRANSFER_ACQUIRER_ID;
+            this.PAYMENT_FIELD = CREDIT_TRANSFER_DATA_FIELD_ID;
+            this.ACQUIRER_ID = CREDIT_TRANSFER_ACQUIRER_ID;
             Builder.SelectPromptPayTypeBuilder.CreditTransferBuilder creditTransferBuilder = (Builder.SelectPromptPayTypeBuilder.CreditTransferBuilder) builder.selectPromptPayTypeBuilder.selectPromptPayType;
             this.mobileNumber = creditTransferBuilder.mobileNumber;
             this.nationalId = creditTransferBuilder.nationalId;
             this.eWalletId = creditTransferBuilder.eWalletId;
             this.bankAccount = creditTransferBuilder.bankAccount;
-            this.amount = creditTransferBuilder.amount;
+            this.AMOUNT = creditTransferBuilder.amount;
         } else {
-            this.paymentField = BILL_PAYMENT_DATA_FIELD_ID;
-            this.acquirerId = BILL_PAYMENT_DATA_ACQUIRER_ID;
+            this.PAYMENT_FIELD = BILL_PAYMENT_DATA_FIELD_ID;
+            this.ACQUIRER_ID = BILL_PAYMENT_DATA_ACQUIRER_ID;
             Builder.SelectPromptPayTypeBuilder.BillPaymentBuilder billPaymentBuilder = (Builder.SelectPromptPayTypeBuilder.BillPaymentBuilder) builder.selectPromptPayTypeBuilder.selectPromptPayType;
             this.billerId = billPaymentBuilder.billerId;
             this.ref1 = billPaymentBuilder.ref1;
             this.ref2 = billPaymentBuilder.ref2;
             this.ref3 = billPaymentBuilder.ref3;
-            this.amount = billPaymentBuilder.amount;
+            this.AMOUNT = billPaymentBuilder.amount;
 
         }
-        this.usageType = builder.usageType;
-        this.currencyCode = builder.currencyCode;
-        this.countryCode = builder.countryCode;
+        this.USAGE_TYPE = builder.usageType;
+        this.CURRENCY_CODE = builder.currencyCode;
+        this.COUNTRY_CODE = builder.countryCode;
     }
 
     private static ByteArrayOutputStream generateQRCodeImage(String text, int width, int height)
@@ -81,10 +78,10 @@ public class ThaiQRPromptPay {
     public String generateContent() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(generateField(0, PAYLOAD_FORMAT_INDICATOR));
-        stringBuilder.append(generateField(1, usageType));
+        stringBuilder.append(generateField(1, USAGE_TYPE));
 
-        StringBuilder content = new StringBuilder(generateField(0, acquirerId));
-        if (paymentField == 29) {
+        StringBuilder content = new StringBuilder(generateField(0, ACQUIRER_ID));
+        if (PAYMENT_FIELD == 29) {
             if (mobileNumber != null) {
                 if (mobileNumber.startsWith("0")) {
                     mobileNumber = mobileNumber.substring(1);
@@ -97,24 +94,24 @@ public class ThaiQRPromptPay {
             } else if (bankAccount != null) {
                 content.append(generateField(4, bankAccount));
             }
-        } else if (paymentField == 30) {
+        } else if (PAYMENT_FIELD == 30) {
             content.append(generateField(1, billerId));
             content.append(generateField(2, ref1));
             if (ref2 != null) {
                 content.append(generateField(3, ref2));
             }
         }
-        stringBuilder.append(generateField(paymentField, content.toString()));
+        stringBuilder.append(generateField(PAYMENT_FIELD, content.toString()));
 
-        stringBuilder.append(generateField(53, currencyCode));
-        if (amount != null) {
-            stringBuilder.append(generateField(54, moneyFormat.format(amount)));
+        stringBuilder.append(generateField(53, CURRENCY_CODE));
+        if (AMOUNT != null) {
+            stringBuilder.append(generateField(54, MONEY_FORMAT.format(AMOUNT)));
         }
-        stringBuilder.append(generateField(58, countryCode));
+        stringBuilder.append(generateField(58, COUNTRY_CODE));
         if (ref3 != null) {
             stringBuilder.append(generateField(62, generateField(7, ref3)));
         }
-        stringBuilder.append("6304" + (Integer.toHexString(Helper.crc16((stringBuilder.toString() + "6304").getBytes())).toUpperCase()));
+        stringBuilder.append("6304").append(Integer.toHexString(Helper.crc16((stringBuilder.toString() + "6304").getBytes())).toUpperCase());
         return stringBuilder.toString();
     }
 
@@ -211,15 +208,15 @@ public class ThaiQRPromptPay {
             return selectPromptPayTypeBuilder;
         }
 
-        private interface BillPaymentBuilderBillerId {
+        public interface BillPaymentBuilderBillerId {
             BillPaymentBuilderRef1 billerId(String billerId);
         }
 
-        private interface BillPaymentBuilderRef1 {
+        public interface BillPaymentBuilderRef1 {
             BillPaymentBuilderOptionalDetail ref1(String ref1);
         }
 
-        private interface BillPaymentBuilderOptionalDetail extends BuildReady {
+        public interface BillPaymentBuilderOptionalDetail extends BuildReady {
             BillPaymentBuilderOptionalDetail amount(BigDecimal amount);
 
             BillPaymentBuilderOptionalDetail amount(String amount);
@@ -229,7 +226,7 @@ public class ThaiQRPromptPay {
             BillPaymentBuilderOptionalDetail ref3(String ref3);
         }
 
-        private interface CreditTransferBuilderIdenifier {
+        public interface CreditTransferBuilderIdenifier {
             CreditTransferBuilderAmount mobileNumber(String mobileNumber);
 
             CreditTransferBuilderAmount nationalId(String nationalId);
@@ -239,35 +236,27 @@ public class ThaiQRPromptPay {
             CreditTransferBuilderAmount bankAccount(String bankAccount);
         }
 
-        private interface CreditTransferBuilderAmount extends BuildReady {
+        public interface CreditTransferBuilderAmount extends BuildReady {
             BuildReady amount(BigDecimal amount);
         }
 
-        private interface BuildReady {
+        public interface BuildReady {
             ThaiQRPromptPay build();
         }
 
-        private interface SelectPromptPayType {
+        interface SelectPromptPayType {
 
         }
 
         public class SelectPromptPayTypeBuilder {
             protected SelectPromptPayType selectPromptPayType;
 
-            /**
-             * Specify PromptPay Type as Credit Transfer (Tag 29)
-             * @return
-             */
-            private CreditTransferBuilderIdenifier creditTransfer() {
+            public CreditTransferBuilderIdenifier creditTransfer() {
                 CreditTransferBuilder creditTransferBuilder = new CreditTransferBuilder();
                 this.selectPromptPayType = creditTransferBuilder;
                 return creditTransferBuilder;
             }
 
-            /**
-             * Specify PromptPay Type as Bill Payment (Tag 30)
-             * @return
-             */
             public BillPaymentBuilderBillerId billPayment() {
                 BillPaymentBuilder billPaymentBuilder = new BillPaymentBuilder();
                 this.selectPromptPayType = billPaymentBuilder;
@@ -281,11 +270,7 @@ public class ThaiQRPromptPay {
                 private String bankAccount;
                 private BigDecimal amount;
 
-                /**
-                 * Specify mobile number
-                 * @param mobileNumber Mobile Number
-                 * @return
-                 */
+                @Override
                 public CreditTransferBuilderAmount mobileNumber(String mobileNumber) {
                     validateNumeric("Mobile Number", mobileNumber);
                     validateLength("Mobile Number", mobileNumber, 10);
@@ -293,11 +278,7 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
-                /**
-                 * Specify Thai National ID
-                 * @param nationalId Thai National ID
-                 * @return
-                 */
+                @Override
                 public CreditTransferBuilderAmount nationalId(String nationalId) {
                     validateNumeric("National ID/Tax ID", nationalId);
                     validateLength("National ID/Tax ID", nationalId, 13);
@@ -305,11 +286,7 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
-                /**
-                 * Specify E-Wallet ID
-                 * @param eWalletId E-Wallet ID
-                 * @return
-                 */
+                @Override
                 public CreditTransferBuilderAmount eWalletId(String eWalletId) {
                     validateNumeric("E-Wallet ID", eWalletId);
                     validateLength("E-Wallet ID", eWalletId, 15);
@@ -322,6 +299,7 @@ public class ThaiQRPromptPay {
                  * @param bankAccount Bank Account Number
                  * @return
                  */
+                @Override
                 public CreditTransferBuilderAmount bankAccount(String bankAccount) {
                     validateNumeric("Bank Account", bankAccount);
                     validateLength("Bank Account", bankAccount, 43);
@@ -334,6 +312,7 @@ public class ThaiQRPromptPay {
                  * @param amount
                  * @return
                  */
+                @Override
                 public BuildReady amount(BigDecimal amount) {
                     validateAmount(amount);
                     this.amount = amount;
@@ -341,18 +320,10 @@ public class ThaiQRPromptPay {
                 }
 
                 /**
-                 * Specify amount in String
-                 * @param amount
-                 * @return
-                 */
-                public BuildReady amount(String amount) {
-                    return amount(new BigDecimal(amount));
-                }
-
-                /**
                  * Construct ThaiQRPromptPay object
                  * @return
                  */
+                @Override
                 public ThaiQRPromptPay build() {
                     return new ThaiQRPromptPay(Builder.this);
                 }
@@ -370,6 +341,7 @@ public class ThaiQRPromptPay {
                  * @param billerId
                  * @return
                  */
+                @Override
                 public BillPaymentBuilderRef1 billerId(String billerId) {
                     validateNumeric("Biller ID", billerId);
                     validateLength("Biller ID", billerId, 15);
@@ -382,6 +354,7 @@ public class ThaiQRPromptPay {
                  * @param ref1
                  * @return
                  */
+                @Override
                 public BillPaymentBuilderOptionalDetail ref1(String ref1) {
                     validateAlphanumeric("Reference 1", ref1);
                     validateLength("Reference 1", ref1, 15);
@@ -394,6 +367,7 @@ public class ThaiQRPromptPay {
                  * @param ref2
                  * @return
                  */
+                @Override
                 public BillPaymentBuilderOptionalDetail ref2(String ref2) {
                     validateAlphanumeric("Reference 2", ref2);
                     validateLength("Reference 2", ref2, 20);
@@ -406,6 +380,7 @@ public class ThaiQRPromptPay {
                  * @param ref3
                  * @return
                  */
+                @Override
                 public BillPaymentBuilderOptionalDetail ref3(String ref3) {
                     validateAlphanumeric("Reference 3", ref3);
                     validateLength("Terminal ID/Reference 3", ref3, 26);
@@ -418,8 +393,9 @@ public class ThaiQRPromptPay {
                  * @param amount
                  * @return
                  */
+                @Override
                 public BillPaymentBuilderOptionalDetail amount(BigDecimal amount) {
-                    validateLength("Amount", moneyFormat.format(amount), 13);
+                    validateLength("Amount", MONEY_FORMAT.format(amount), 13);
                     validateAmount(amount);
                     this.amount = amount;
                     return this;
@@ -430,6 +406,7 @@ public class ThaiQRPromptPay {
                  * @param amount
                  * @return
                  */
+                @Override
                 public BillPaymentBuilderOptionalDetail amount(String amount) {
                     return amount(new BigDecimal(amount));
                 }
@@ -438,6 +415,7 @@ public class ThaiQRPromptPay {
                  * Construct ThaiQRPromptPay object
                  * @return
                  */
+                @Override
                 public ThaiQRPromptPay build() {
                     return new ThaiQRPromptPay(Builder.this);
                 }
