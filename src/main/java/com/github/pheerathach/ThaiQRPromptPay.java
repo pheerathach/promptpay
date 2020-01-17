@@ -54,7 +54,6 @@ public class ThaiQRPromptPay {
             this.ref2 = billPaymentBuilder.ref2;
             this.ref3 = billPaymentBuilder.ref3;
             this.AMOUNT = billPaymentBuilder.amount;
-
         }
         this.USAGE_TYPE = builder.usageType;
         this.CURRENCY_CODE = builder.currencyCode;
@@ -62,7 +61,7 @@ public class ThaiQRPromptPay {
     }
 
     private static ByteArrayOutputStream generateQRCodeImage(String text, int width, int height)
-            throws WriterException, IOException {
+            throws IOException, WriterException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
@@ -72,8 +71,9 @@ public class ThaiQRPromptPay {
     }
 
     /**
-     * Returns the content for further QR generation
-     * @return
+     * Returns the content for later QR generation
+     *
+     * @return The content of generated QR.
      */
     public String generateContent() {
         StringBuilder stringBuilder = new StringBuilder();
@@ -116,8 +116,8 @@ public class ThaiQRPromptPay {
     }
 
     /**
-     * Return the content for further QR generation
-     * @return
+     * Return the content for later QR generation
+     * @return The content of generated QR.
      */
     @Override
     public String toString() {
@@ -130,28 +130,25 @@ public class ThaiQRPromptPay {
 
     /**
      * Draw the QR code image to the specified path with specified width and height.
-     * @param width
-     * @param height
-     * @param file
-     * @throws IOException
-     * @throws WriterException
+     * @param width the width of QR code in pixels
+     * @param height the height of QR code in pixels
+     * @param file the path which QR code image would be written to
+     * @throws IOException if the path to write QR code is invalid.
+     * @throws WriterException if the content of QR code is malformed.
      */
     public void draw(int width, int height, File file) throws IOException, WriterException {
         FileOutputStream fileOutputStream = new FileOutputStream(file);
-        try {
             fileOutputStream.write(generateQRCodeImage(generateContent(), width, height).toByteArray());
-        } finally {
             fileOutputStream.close();
-        }
     }
 
     /**
      * Draw the QR code image to Base64 string.
-     * @param width
-     * @param height
-     * @return
-     * @throws IOException
-     * @throws WriterException
+     * @param width the width of QR code in pixels
+     * @param height the height of QR code in pixels
+     * @return the base64 string of QR code image
+     * @throws IOException if the path to write QR code is invalid.
+     * @throws WriterException if the content of QR code is malformed.
      */
     public String drawToBase64(int width, int height) throws IOException, WriterException {
         byte[] imageData = generateQRCodeImage(generateContent(), width, height).toByteArray();
@@ -160,11 +157,11 @@ public class ThaiQRPromptPay {
 
     /**
      * Draw the QR code image to byte array.
-     * @param width
-     * @param height
-     * @return
-     * @throws IOException
-     * @throws WriterException
+     * @param width the width of QR code in pixels
+     * @param height the height of QR code in pixels
+     * @return the byte array of QR code image
+     * @throws IOException if the path to write QR code is invalid.
+     * @throws WriterException if the content of QR code is malformed.
      */
     public byte[] drawToByteArray(int width, int height) throws IOException, WriterException {
         return generateQRCodeImage(generateContent(), width, height).toByteArray();
@@ -179,8 +176,8 @@ public class ThaiQRPromptPay {
         /**
          * Specify currency code
          * Default is Thai Baht (764)
-         * @param currencyCode
-         * @return
+         * @param currencyCode Currency Code
+         * @return This builder.
          */
         public Builder currencyCode(String currencyCode) {
             this.currencyCode = currencyCode;
@@ -190,8 +187,8 @@ public class ThaiQRPromptPay {
         /**
          * Specify country code
          * Default is Thailand (TH)
-         * @param countryCode
-         * @return
+         * @param countryCode Country Code
+         * @return This builder.
          */
         public Builder countryCode(String countryCode) {
             this.countryCode = countryCode;
@@ -226,7 +223,7 @@ public class ThaiQRPromptPay {
             BillPaymentBuilderOptionalDetail ref3(String ref3);
         }
 
-        public interface CreditTransferBuilderIdenifier {
+        public interface CreditTransferBuilderIdentifier {
             CreditTransferBuilderAmount mobileNumber(String mobileNumber);
 
             CreditTransferBuilderAmount nationalId(String nationalId);
@@ -251,7 +248,7 @@ public class ThaiQRPromptPay {
         public class SelectPromptPayTypeBuilder {
             protected SelectPromptPayType selectPromptPayType;
 
-            public CreditTransferBuilderIdenifier creditTransfer() {
+            public CreditTransferBuilderIdentifier creditTransfer() {
                 CreditTransferBuilder creditTransferBuilder = new CreditTransferBuilder();
                 this.selectPromptPayType = creditTransferBuilder;
                 return creditTransferBuilder;
@@ -263,7 +260,7 @@ public class ThaiQRPromptPay {
                 return billPaymentBuilder;
             }
 
-            private class CreditTransferBuilder implements SelectPromptPayType, CreditTransferBuilderIdenifier, CreditTransferBuilderAmount {
+            private class CreditTransferBuilder implements SelectPromptPayType, CreditTransferBuilderIdentifier, CreditTransferBuilderAmount {
                 private String mobileNumber;
                 private String nationalId;
                 private String eWalletId;
@@ -278,6 +275,12 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
+                /**
+                 * Specify Thai National ID
+                 *
+                 * @param nationalId Thai National ID
+                 * @return This builder.
+                 */
                 @Override
                 public CreditTransferBuilderAmount nationalId(String nationalId) {
                     validateNumeric("National ID/Tax ID", nationalId);
@@ -286,6 +289,12 @@ public class ThaiQRPromptPay {
                     return this;
                 }
 
+                /**
+                 * Specify E-Wallet ID
+                 *
+                 * @param eWalletId E-Wallet ID
+                 * @return This builder.
+                 */
                 @Override
                 public CreditTransferBuilderAmount eWalletId(String eWalletId) {
                     validateNumeric("E-Wallet ID", eWalletId);
@@ -297,7 +306,7 @@ public class ThaiQRPromptPay {
                 /**
                  * Specify bank account number
                  * @param bankAccount Bank Account Number
-                 * @return
+                 * @return This builder.
                  */
                 @Override
                 public CreditTransferBuilderAmount bankAccount(String bankAccount) {
@@ -309,8 +318,8 @@ public class ThaiQRPromptPay {
 
                 /**
                  * Specify amount in BigDecimal
-                 * @param amount
-                 * @return
+                 * @param amount Transaction amount
+                 * @return This builder.
                  */
                 @Override
                 public BuildReady amount(BigDecimal amount) {
@@ -321,7 +330,7 @@ public class ThaiQRPromptPay {
 
                 /**
                  * Construct ThaiQRPromptPay object
-                 * @return
+                 * @return Returns an instance of ThaiQRPromptPay created from the fields set on this builder.
                  */
                 @Override
                 public ThaiQRPromptPay build() {
@@ -338,8 +347,8 @@ public class ThaiQRPromptPay {
 
                 /**
                  * Specify Tax ID (10 or 13 digits) + Suffix 2 digits
-                 * @param billerId
-                 * @return
+                 * @param billerId Biller ID of payee
+                 * @return This builder.
                  */
                 @Override
                 public BillPaymentBuilderRef1 billerId(String billerId) {
@@ -351,8 +360,8 @@ public class ThaiQRPromptPay {
 
                 /**
                  * Specify Reference 1
-                 * @param ref1
-                 * @return
+                 * @param ref1 Reference No. 1
+                 * @return This builder.
                  */
                 @Override
                 public BillPaymentBuilderOptionalDetail ref1(String ref1) {
@@ -364,8 +373,8 @@ public class ThaiQRPromptPay {
 
                 /**
                  * Specify Reference 2
-                 * @param ref2
-                 * @return
+                 * @param ref2 Reference No. 2
+                 * @return This builder.
                  */
                 @Override
                 public BillPaymentBuilderOptionalDetail ref2(String ref2) {
@@ -377,8 +386,8 @@ public class ThaiQRPromptPay {
 
                 /**
                  * Specify Terminal ID or Reference 3
-                 * @param ref3
-                 * @return
+                 * @param ref3 Reference No. 3
+                 * @return This builder.
                  */
                 @Override
                 public BillPaymentBuilderOptionalDetail ref3(String ref3) {
@@ -390,8 +399,8 @@ public class ThaiQRPromptPay {
 
                 /**
                  * Specify amount in BigDecimal
-                 * @param amount
-                 * @return
+                 * @param amount Transaction amount
+                 * @return This builder.
                  */
                 @Override
                 public BillPaymentBuilderOptionalDetail amount(BigDecimal amount) {
@@ -403,8 +412,8 @@ public class ThaiQRPromptPay {
 
                 /**
                  * Specify amount in String
-                 * @param amount
-                 * @return
+                 * @param amount Transaction amount
+                 * @return This builder.
                  */
                 @Override
                 public BillPaymentBuilderOptionalDetail amount(String amount) {
@@ -413,7 +422,7 @@ public class ThaiQRPromptPay {
 
                 /**
                  * Construct ThaiQRPromptPay object
-                 * @return
+                 * @return Returns an instance of ThaiQRPromptPay created from the fields set on this builder.
                  */
                 @Override
                 public ThaiQRPromptPay build() {
