@@ -111,7 +111,7 @@ public class ThaiQRPromptPay {
         if (ref3 != null) {
             stringBuilder.append(generateField(62, generateField(7, ref3)));
         }
-        stringBuilder.append("6304").append(Integer.toHexString(Helper.crc16((stringBuilder.toString() + "6304").getBytes())).toUpperCase());
+        stringBuilder.append("6304" + (Integer.toHexString(Helper.crc16((stringBuilder.toString() + "6304").getBytes())).toUpperCase()));
         return stringBuilder.toString();
     }
 
