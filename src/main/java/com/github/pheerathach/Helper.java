@@ -9,17 +9,18 @@ class Helper {
     }
 
     // Special Thanks to thedayofcondor @ https://stackoverflow.com/questions/13209364/convert-c-crc16-to-java-crc16/13209435
-    protected static int crc16(final byte[] buffer) {
+    protected static String crc16(final byte[] buffer) {
         int crc = 0xFFFF;
-        for (int j = 0; j < buffer.length; j++) {
+        for (byte b : buffer) {
             crc = ((crc >>> 8) | (crc << 8)) & 0xffff;
-            crc ^= (buffer[j] & 0xff);
+            crc ^= (b & 0xff);
             crc ^= ((crc & 0xff) >> 4);
             crc ^= (crc << 12) & 0xffff;
             crc ^= ((crc & 0xFF) << 5) & 0xffff;
         }
         crc &= 0xffff;
-        return crc;
+        String result = Integer.toHexString(crc).toUpperCase();
+        return ("0000" + result).substring(result.length());
     }
 
     protected static void validateLength(String name, String data, int maxLength) {

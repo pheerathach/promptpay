@@ -30,7 +30,6 @@ public class ThaiQRPromptPay {
     private String mobileNumber;
     private String nationalId;
     private String eWalletId;
-    private String bankAccount;
     private String ref1;
     private String ref2;
     private String ref3;
@@ -43,7 +42,6 @@ public class ThaiQRPromptPay {
             this.mobileNumber = creditTransferBuilder.mobileNumber;
             this.nationalId = creditTransferBuilder.nationalId;
             this.eWalletId = creditTransferBuilder.eWalletId;
-            this.bankAccount = creditTransferBuilder.bankAccount;
             this.AMOUNT = creditTransferBuilder.amount;
         } else {
             this.PAYMENT_FIELD = BILL_PAYMENT_DATA_FIELD_ID;
@@ -91,8 +89,6 @@ public class ThaiQRPromptPay {
                 content.append(generateField(2, nationalId));
             } else if (eWalletId != null) {
                 content.append(generateField(3, eWalletId));
-            } else if (bankAccount != null) {
-                content.append(generateField(4, bankAccount));
             }
         } else if (PAYMENT_FIELD == 30) {
             content.append(generateField(1, billerId));
@@ -107,11 +103,14 @@ public class ThaiQRPromptPay {
         if (AMOUNT != null) {
             stringBuilder.append(generateField(54, MONEY_FORMAT.format(AMOUNT)));
         }
+
         stringBuilder.append(generateField(58, COUNTRY_CODE));
         if (ref3 != null) {
             stringBuilder.append(generateField(62, generateField(7, ref3)));
         }
-        stringBuilder.append("6304" + (Integer.toHexString(Helper.crc16((stringBuilder.toString() + "6304").getBytes())).toUpperCase()));
+
+        stringBuilder.append("6304");
+        stringBuilder.append(Helper.crc16((stringBuilder.toString()).getBytes()));
         return stringBuilder.toString();
     }
 
@@ -130,10 +129,11 @@ public class ThaiQRPromptPay {
 
     /**
      * Draw the QR code image to the specified path with specified width and height.
-     * @param width the width of QR code in pixels
+     *
+     * @param width  the width of QR code in pixels
      * @param height the height of QR code in pixels
-     * @param file the path which QR code image would be written to
-     * @throws IOException if the path to write QR code is invalid.
+     * @param file   the path which QR code image would be written to (PNG format)
+     * @throws IOException     if the path to write QR code is invalid.
      * @throws WriterException if the content of QR code is malformed.
      */
     public void draw(int width, int height, File file) throws IOException, WriterException {
@@ -180,6 +180,8 @@ public class ThaiQRPromptPay {
          * @return This builder.
          */
         public Builder currencyCode(String currencyCode) {
+            validateNumeric("Currency Code", currencyCode);
+            validateLength("Currency Code", currencyCode, 3);
             this.currencyCode = currencyCode;
             return this;
         }
@@ -191,7 +193,8 @@ public class ThaiQRPromptPay {
          * @return This builder.
          */
         public Builder countryCode(String countryCode) {
-            this.countryCode = countryCode;
+            validateLength("Country Code", countryCode, 2);
+            this.countryCode = countryCode.toUpperCase();
             return this;
         }
 
@@ -216,8 +219,6 @@ public class ThaiQRPromptPay {
         public interface BillPaymentBuilderOptionalDetail extends BuildReady {
             BillPaymentBuilderOptionalDetail amount(BigDecimal amount);
 
-            BillPaymentBuilderOptionalDetail amount(String amount);
-
             BillPaymentBuilderOptionalDetail ref2(String ref2);
 
             BillPaymentBuilderOptionalDetail ref3(String ref3);
@@ -229,8 +230,6 @@ public class ThaiQRPromptPay {
             CreditTransferBuilderAmount nationalId(String nationalId);
 
             CreditTransferBuilderAmount eWalletId(String eWalletId);
-
-            CreditTransferBuilderAmount bankAccount(String bankAccount);
         }
 
         public interface CreditTransferBuilderAmount extends BuildReady {
@@ -264,7 +263,6 @@ public class ThaiQRPromptPay {
                 private String mobileNumber;
                 private String nationalId;
                 private String eWalletId;
-                private String bankAccount;
                 private BigDecimal amount;
 
                 @Override
@@ -300,19 +298,6 @@ public class ThaiQRPromptPay {
                     validateNumeric("E-Wallet ID", eWalletId);
                     validateLength("E-Wallet ID", eWalletId, 15);
                     this.eWalletId = eWalletId;
-                    return this;
-                }
-
-                /**
-                 * Specify bank account number
-                 * @param bankAccount Bank Account Number
-                 * @return This builder.
-                 */
-                @Override
-                public CreditTransferBuilderAmount bankAccount(String bankAccount) {
-                    validateNumeric("Bank Account", bankAccount);
-                    validateLength("Bank Account", bankAccount, 43);
-                    this.bankAccount = bankAccount;
                     return this;
                 }
 
@@ -408,16 +393,6 @@ public class ThaiQRPromptPay {
                     validateAmount(amount);
                     this.amount = amount;
                     return this;
-                }
-
-                /**
-                 * Specify amount in String
-                 * @param amount Transaction amount
-                 * @return This builder.
-                 */
-                @Override
-                public BillPaymentBuilderOptionalDetail amount(String amount) {
-                    return amount(new BigDecimal(amount));
                 }
 
                 /**
