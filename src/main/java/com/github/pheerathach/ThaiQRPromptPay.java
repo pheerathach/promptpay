@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 import static com.github.pheerathach.Constants.*;
@@ -33,6 +34,7 @@ public class ThaiQRPromptPay {
     private String ref1;
     private String ref2;
     private String ref3;
+    private OutputType outputType;
 
     private ThaiQRPromptPay(Builder builder) {
         if (builder.selectPromptPayTypeBuilder.selectPromptPayType instanceof Builder.SelectPromptPayTypeBuilder.CreditTransferBuilder) {
@@ -43,6 +45,7 @@ public class ThaiQRPromptPay {
             this.nationalId = creditTransferBuilder.nationalId;
             this.eWalletId = creditTransferBuilder.eWalletId;
             this.amount = creditTransferBuilder.amount;
+            this.outputType = OutputType.TAG30;
         } else {
             this.paymentField = BILL_PAYMENT_DATA_FIELD_ID;
             this.acquirerId = BILL_PAYMENT_DATA_ACQUIRER_ID;
@@ -52,10 +55,26 @@ public class ThaiQRPromptPay {
             this.ref2 = billPaymentBuilder.ref2;
             this.ref3 = billPaymentBuilder.ref3;
             this.amount = billPaymentBuilder.amount;
+            this.outputType = builder.outputType;
         }
         this.usageType = builder.usageType;
         this.currencyCode = builder.currencyCode;
         this.countryCode = builder.countryCode;
+    }
+
+    /**
+     * Returns the content for later QR generation
+     *
+     * @return The content of generated QR.
+     */
+    public String generateContent() {
+        switch (outputType) {
+            case BOT3:
+                return generateBOT();
+            case TAG30:
+            default:
+                return generatePromptPayQR();
+        }
     }
 
     private static ByteArrayOutputStream generateQRCodeImage(String text, int width, int height)
@@ -68,12 +87,26 @@ public class ThaiQRPromptPay {
         return byteArrayOutputStream;
     }
 
-    /**
-     * Returns the content for later QR generation
-     *
-     * @return The content of generated QR.
-     */
-    public String generateContent() {
+    private String generateBOT() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("|");
+        stringBuilder.append(billerId);
+        stringBuilder.append("\n");
+        stringBuilder.append(ref1);
+        stringBuilder.append("\n");
+        if (ref2 != null) {
+            stringBuilder.append(ref2);
+        }
+        stringBuilder.append("\n");
+        if (amount != null) {
+            stringBuilder.append(amount.multiply(oneHundred).setScale(0, RoundingMode.DOWN));
+        } else {
+            stringBuilder.append(0);
+        }
+        return stringBuilder.toString();
+    }
+
+    private String generatePromptPayQR() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(generateField(0, PAYLOAD_FORMAT_INDICATOR));
         stringBuilder.append(generateField(1, usageType));
@@ -114,8 +147,13 @@ public class ThaiQRPromptPay {
         return stringBuilder.toString();
     }
 
+    public enum OutputType {
+        BOT3, TAG30
+    }
+
     /**
      * Return the content for later QR generation
+     *
      * @return The content of generated QR.
      */
     @Override
@@ -172,6 +210,7 @@ public class ThaiQRPromptPay {
         protected String currencyCode = DEFAULT_CURRENCY_CODE;
         protected String countryCode = DEFAULT_COUNTRY_CODE;
         protected SelectPromptPayTypeBuilder selectPromptPayTypeBuilder = new SelectPromptPayTypeBuilder();
+        protected OutputType outputType = OutputType.TAG30;
 
         /**
          * Specify currency code
@@ -200,11 +239,18 @@ public class ThaiQRPromptPay {
 
         public SelectPromptPayTypeBuilder staticQR() {
             this.usageType = STATIC_QR_CODE;
+            this.outputType = OutputType.TAG30;
             return selectPromptPayTypeBuilder;
         }
 
         public SelectPromptPayTypeBuilder dynamicQR() {
             this.usageType = DYNAMIC_QR_CODE;
+            this.outputType = OutputType.TAG30;
+            return selectPromptPayTypeBuilder;
+        }
+
+        public SelectPromptPayTypeBuilder bot() {
+            this.outputType = OutputType.BOT3;
             return selectPromptPayTypeBuilder;
         }
 
@@ -247,16 +293,16 @@ public class ThaiQRPromptPay {
         public class SelectPromptPayTypeBuilder {
             protected SelectPromptPayType selectPromptPayType;
 
-            public CreditTransferBuilderIdentifier creditTransfer() {
-                CreditTransferBuilder creditTransferBuilder = new CreditTransferBuilder();
-                this.selectPromptPayType = creditTransferBuilder;
-                return creditTransferBuilder;
-            }
-
             public BillPaymentBuilderBillerId billPayment() {
                 BillPaymentBuilder billPaymentBuilder = new BillPaymentBuilder();
                 this.selectPromptPayType = billPaymentBuilder;
                 return billPaymentBuilder;
+            }
+
+            public CreditTransferBuilderIdentifier creditTransfer() {
+                CreditTransferBuilder creditTransferBuilder = new CreditTransferBuilder();
+                this.selectPromptPayType = creditTransferBuilder;
+                return creditTransferBuilder;
             }
 
             private class CreditTransferBuilder implements SelectPromptPayType, CreditTransferBuilderIdentifier, CreditTransferBuilderAmount {
