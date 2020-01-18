@@ -1771,4 +1771,122 @@ public class ThaiQRPromptPayTest {
                 .build();
     }
 
+    @Test
+    public void testBillPaymentBotWithRef1AndRef2AndAmount_thenSuccess() {
+        ThaiQRPromptPay qr = new ThaiQRPromptPay.Builder()
+                .bot()
+                .billPayment()
+                .billerId("000000000009132")
+                .ref1("321312312")
+                .ref2("432542353245")
+                .amount(new BigDecimal("11.00"))
+                .build();
+
+        String result = qr.generateContent();
+        String[] resultSeparatedByCR = result.split("\n");
+        Assert.assertEquals(4, resultSeparatedByCR.length);
+        Assert.assertEquals("|000000000009132", resultSeparatedByCR[0]);
+        Assert.assertEquals("321312312", resultSeparatedByCR[1]);
+        Assert.assertEquals("432542353245", resultSeparatedByCR[2]);
+        Assert.assertEquals("1100", resultSeparatedByCR[3]);
+    }
+
+    @Test
+    public void testBillPaymentBotWithRef1AndRef2AndAmountZero_thenSuccess() {
+        ThaiQRPromptPay qr = new ThaiQRPromptPay.Builder()
+                .bot()
+                .billPayment()
+                .billerId("000000000009132")
+                .ref1("321312312")
+                .ref2("432542353245")
+                .amount(new BigDecimal("0.00"))
+                .build();
+
+        String result = qr.generateContent();
+        String[] resultSeparatedByCR = result.split("\n");
+        Assert.assertEquals(4, resultSeparatedByCR.length);
+        Assert.assertEquals("|000000000009132", resultSeparatedByCR[0]);
+        Assert.assertEquals("321312312", resultSeparatedByCR[1]);
+        Assert.assertEquals("432542353245", resultSeparatedByCR[2]);
+        Assert.assertEquals("0", resultSeparatedByCR[3]);
+    }
+
+    @Test
+    public void testBillPaymentBotWithRef1AndRef2WithoutAmount_thenSuccess() {
+        ThaiQRPromptPay qr = new ThaiQRPromptPay.Builder()
+                .bot()
+                .billPayment()
+                .billerId("000000000009132")
+                .ref1("321312312")
+                .ref2("432542353245")
+                .build();
+
+        String result = qr.generateContent();
+        String[] resultSeparatedByCR = result.split("\n");
+        Assert.assertEquals(4, resultSeparatedByCR.length);
+        Assert.assertEquals("|000000000009132", resultSeparatedByCR[0]);
+        Assert.assertEquals("321312312", resultSeparatedByCR[1]);
+        Assert.assertEquals("432542353245", resultSeparatedByCR[2]);
+        Assert.assertEquals("0", resultSeparatedByCR[3]);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testBillPaymentBotWithRef1AndRef2AndAmountBelowZero_thenFailure() {
+        new ThaiQRPromptPay.Builder()
+                .bot()
+                .billPayment()
+                .billerId("000000000009132")
+                .ref1("321312312")
+                .ref2("123231")
+                .amount(new BigDecimal("-2.34"))
+                .build();
+    }
+
+    @Test
+    public void testBillPaymentBotWithRef1AndAmount_thenSuccess() {
+        ThaiQRPromptPay qr = new ThaiQRPromptPay.Builder()
+                .bot()
+                .billPayment()
+                .billerId("000000000009132")
+                .ref1("321312312")
+                .amount(new BigDecimal("11.00"))
+                .build();
+
+        String result = qr.generateContent();
+        String[] resultSeparatedByCR = result.split("\n");
+        Assert.assertEquals(4, resultSeparatedByCR.length);
+        Assert.assertEquals("|000000000009132", resultSeparatedByCR[0]);
+        Assert.assertEquals("321312312", resultSeparatedByCR[1]);
+        Assert.assertEquals("", resultSeparatedByCR[2]);
+        Assert.assertEquals("1100", resultSeparatedByCR[3]);
+    }
+
+    @Test
+    public void testBillPaymentBotWithRef1WithoutAmount_thenSuccess() {
+        ThaiQRPromptPay qr = new ThaiQRPromptPay.Builder()
+                .bot()
+                .billPayment()
+                .billerId("000000000009132")
+                .ref1("321312312")
+                .build();
+
+        String result = qr.generateContent();
+        String[] resultSeparatedByCR = result.split("\n");
+        Assert.assertEquals(4, resultSeparatedByCR.length);
+        Assert.assertEquals("|000000000009132", resultSeparatedByCR[0]);
+        Assert.assertEquals("321312312", resultSeparatedByCR[1]);
+        Assert.assertEquals("", resultSeparatedByCR[2]);
+        Assert.assertEquals("0", resultSeparatedByCR[3]);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testBillPaymentBotWithRef1AndAmountBelowZero_thenFailure() {
+        new ThaiQRPromptPay.Builder()
+                .bot()
+                .billPayment()
+                .billerId("000000000009132")
+                .ref1("321312312")
+                .amount(new BigDecimal("-2.34"))
+                .build();
+    }
 }
