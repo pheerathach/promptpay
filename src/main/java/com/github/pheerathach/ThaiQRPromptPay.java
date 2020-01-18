@@ -20,44 +20,42 @@ import static com.github.pheerathach.Helper.*;
 public class ThaiQRPromptPay {
     private static final DecimalFormat MONEY_FORMAT = new DecimalFormat("0.00");
 
-    private final Integer PAYMENT_FIELD;
-    private final String USAGE_TYPE;
-    private final String ACQUIRER_ID;
-    private final BigDecimal AMOUNT;
-    private final String CURRENCY_CODE;
-    private final String COUNTRY_CODE;
+    private final Integer paymentField;
+    private final String usageType;
+    private final String acquirerId;
+    private final BigDecimal amount;
+    private final String currencyCode;
+    private final String countryCode;
     private String billerId;
     private String mobileNumber;
     private String nationalId;
     private String eWalletId;
-    private String bankAccount;
     private String ref1;
     private String ref2;
     private String ref3;
 
     private ThaiQRPromptPay(Builder builder) {
         if (builder.selectPromptPayTypeBuilder.selectPromptPayType instanceof Builder.SelectPromptPayTypeBuilder.CreditTransferBuilder) {
-            this.PAYMENT_FIELD = CREDIT_TRANSFER_DATA_FIELD_ID;
-            this.ACQUIRER_ID = CREDIT_TRANSFER_ACQUIRER_ID;
+            this.paymentField = CREDIT_TRANSFER_DATA_FIELD_ID;
+            this.acquirerId = CREDIT_TRANSFER_ACQUIRER_ID;
             Builder.SelectPromptPayTypeBuilder.CreditTransferBuilder creditTransferBuilder = (Builder.SelectPromptPayTypeBuilder.CreditTransferBuilder) builder.selectPromptPayTypeBuilder.selectPromptPayType;
             this.mobileNumber = creditTransferBuilder.mobileNumber;
             this.nationalId = creditTransferBuilder.nationalId;
             this.eWalletId = creditTransferBuilder.eWalletId;
-            this.bankAccount = creditTransferBuilder.bankAccount;
-            this.AMOUNT = creditTransferBuilder.amount;
+            this.amount = creditTransferBuilder.amount;
         } else {
-            this.PAYMENT_FIELD = BILL_PAYMENT_DATA_FIELD_ID;
-            this.ACQUIRER_ID = BILL_PAYMENT_DATA_ACQUIRER_ID;
+            this.paymentField = BILL_PAYMENT_DATA_FIELD_ID;
+            this.acquirerId = BILL_PAYMENT_DATA_ACQUIRER_ID;
             Builder.SelectPromptPayTypeBuilder.BillPaymentBuilder billPaymentBuilder = (Builder.SelectPromptPayTypeBuilder.BillPaymentBuilder) builder.selectPromptPayTypeBuilder.selectPromptPayType;
             this.billerId = billPaymentBuilder.billerId;
             this.ref1 = billPaymentBuilder.ref1;
             this.ref2 = billPaymentBuilder.ref2;
             this.ref3 = billPaymentBuilder.ref3;
-            this.AMOUNT = billPaymentBuilder.amount;
+            this.amount = billPaymentBuilder.amount;
         }
-        this.USAGE_TYPE = builder.usageType;
-        this.CURRENCY_CODE = builder.currencyCode;
-        this.COUNTRY_CODE = builder.countryCode;
+        this.usageType = builder.usageType;
+        this.currencyCode = builder.currencyCode;
+        this.countryCode = builder.countryCode;
     }
 
     private static ByteArrayOutputStream generateQRCodeImage(String text, int width, int height)
@@ -78,10 +76,10 @@ public class ThaiQRPromptPay {
     public String generateContent() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(generateField(0, PAYLOAD_FORMAT_INDICATOR));
-        stringBuilder.append(generateField(1, USAGE_TYPE));
+        stringBuilder.append(generateField(1, usageType));
 
-        StringBuilder content = new StringBuilder(generateField(0, ACQUIRER_ID));
-        if (PAYMENT_FIELD == 29) {
+        StringBuilder content = new StringBuilder(generateField(0, acquirerId));
+        if (paymentField == 29) {
             if (mobileNumber != null) {
                 if (mobileNumber.startsWith("0")) {
                     mobileNumber = mobileNumber.substring(1);
@@ -91,27 +89,28 @@ public class ThaiQRPromptPay {
                 content.append(generateField(2, nationalId));
             } else if (eWalletId != null) {
                 content.append(generateField(3, eWalletId));
-            } else if (bankAccount != null) {
-                content.append(generateField(4, bankAccount));
             }
-        } else if (PAYMENT_FIELD == 30) {
+        } else if (paymentField == 30) {
             content.append(generateField(1, billerId));
             content.append(generateField(2, ref1));
             if (ref2 != null) {
                 content.append(generateField(3, ref2));
             }
         }
-        stringBuilder.append(generateField(PAYMENT_FIELD, content.toString()));
+        stringBuilder.append(generateField(paymentField, content.toString()));
 
-        stringBuilder.append(generateField(53, CURRENCY_CODE));
-        if (AMOUNT != null) {
-            stringBuilder.append(generateField(54, MONEY_FORMAT.format(AMOUNT)));
+        stringBuilder.append(generateField(53, currencyCode));
+        if (amount != null) {
+            stringBuilder.append(generateField(54, MONEY_FORMAT.format(amount)));
         }
-        stringBuilder.append(generateField(58, COUNTRY_CODE));
+
+        stringBuilder.append(generateField(58, countryCode));
         if (ref3 != null) {
             stringBuilder.append(generateField(62, generateField(7, ref3)));
         }
-        stringBuilder.append("6304" + (Integer.toHexString(Helper.crc16((stringBuilder.toString() + "6304").getBytes())).toUpperCase()));
+
+        stringBuilder.append("6304");
+        stringBuilder.append(Helper.crc16((stringBuilder.toString()).getBytes()));
         return stringBuilder.toString();
     }
 
@@ -130,16 +129,17 @@ public class ThaiQRPromptPay {
 
     /**
      * Draw the QR code image to the specified path with specified width and height.
-     * @param width the width of QR code in pixels
+     *
+     * @param width  the width of QR code in pixels
      * @param height the height of QR code in pixels
-     * @param file the path which QR code image would be written to
-     * @throws IOException if the path to write QR code is invalid.
+     * @param file   the path which QR code image would be written to (PNG format)
+     * @throws IOException     if the path to write QR code is invalid.
      * @throws WriterException if the content of QR code is malformed.
      */
     public void draw(int width, int height, File file) throws IOException, WriterException {
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
             fileOutputStream.write(generateQRCodeImage(generateContent(), width, height).toByteArray());
-            fileOutputStream.close();
+        }
     }
 
     /**
@@ -180,6 +180,8 @@ public class ThaiQRPromptPay {
          * @return This builder.
          */
         public Builder currencyCode(String currencyCode) {
+            validateNumeric("Currency Code", currencyCode);
+            validateLength("Currency Code", currencyCode, 3);
             this.currencyCode = currencyCode;
             return this;
         }
@@ -191,7 +193,8 @@ public class ThaiQRPromptPay {
          * @return This builder.
          */
         public Builder countryCode(String countryCode) {
-            this.countryCode = countryCode;
+            validateLength("Country Code", countryCode, 2);
+            this.countryCode = countryCode.toUpperCase();
             return this;
         }
 
@@ -216,8 +219,6 @@ public class ThaiQRPromptPay {
         public interface BillPaymentBuilderOptionalDetail extends BuildReady {
             BillPaymentBuilderOptionalDetail amount(BigDecimal amount);
 
-            BillPaymentBuilderOptionalDetail amount(String amount);
-
             BillPaymentBuilderOptionalDetail ref2(String ref2);
 
             BillPaymentBuilderOptionalDetail ref3(String ref3);
@@ -229,8 +230,6 @@ public class ThaiQRPromptPay {
             CreditTransferBuilderAmount nationalId(String nationalId);
 
             CreditTransferBuilderAmount eWalletId(String eWalletId);
-
-            CreditTransferBuilderAmount bankAccount(String bankAccount);
         }
 
         public interface CreditTransferBuilderAmount extends BuildReady {
@@ -264,7 +263,6 @@ public class ThaiQRPromptPay {
                 private String mobileNumber;
                 private String nationalId;
                 private String eWalletId;
-                private String bankAccount;
                 private BigDecimal amount;
 
                 @Override
@@ -300,19 +298,6 @@ public class ThaiQRPromptPay {
                     validateNumeric("E-Wallet ID", eWalletId);
                     validateLength("E-Wallet ID", eWalletId, 15);
                     this.eWalletId = eWalletId;
-                    return this;
-                }
-
-                /**
-                 * Specify bank account number
-                 * @param bankAccount Bank Account Number
-                 * @return This builder.
-                 */
-                @Override
-                public CreditTransferBuilderAmount bankAccount(String bankAccount) {
-                    validateNumeric("Bank Account", bankAccount);
-                    validateLength("Bank Account", bankAccount, 43);
-                    this.bankAccount = bankAccount;
                     return this;
                 }
 
@@ -408,16 +393,6 @@ public class ThaiQRPromptPay {
                     validateAmount(amount);
                     this.amount = amount;
                     return this;
-                }
-
-                /**
-                 * Specify amount in String
-                 * @param amount Transaction amount
-                 * @return This builder.
-                 */
-                @Override
-                public BillPaymentBuilderOptionalDetail amount(String amount) {
-                    return amount(new BigDecimal(amount));
                 }
 
                 /**
