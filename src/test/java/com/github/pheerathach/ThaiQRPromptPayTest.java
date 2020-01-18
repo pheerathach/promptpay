@@ -1784,10 +1784,15 @@ public class ThaiQRPromptPayTest {
 
         String result = qr.generateContent();
         String[] resultSeparatedByCR = result.split("\n");
+        // Assert Four Parts of Content
         Assert.assertEquals(4, resultSeparatedByCR.length);
+        // Assert Biller ID
         Assert.assertEquals("|000000000009132", resultSeparatedByCR[0]);
+        // Assert Ref 1
         Assert.assertEquals("321312312", resultSeparatedByCR[1]);
+        // Assert Ref 2
         Assert.assertEquals("432542353245", resultSeparatedByCR[2]);
+        // Assert Transaction Amount
         Assert.assertEquals("1100", resultSeparatedByCR[3]);
     }
 
@@ -1804,10 +1809,15 @@ public class ThaiQRPromptPayTest {
 
         String result = qr.generateContent();
         String[] resultSeparatedByCR = result.split("\n");
+        // Assert Four Parts of Content
         Assert.assertEquals(4, resultSeparatedByCR.length);
+        // Assert Biller ID
         Assert.assertEquals("|000000000009132", resultSeparatedByCR[0]);
+        // Assert Ref 1
         Assert.assertEquals("321312312", resultSeparatedByCR[1]);
+        // Assert Ref 2
         Assert.assertEquals("432542353245", resultSeparatedByCR[2]);
+        // Assert Transaction Amount
         Assert.assertEquals("0", resultSeparatedByCR[3]);
     }
 
@@ -1823,10 +1833,15 @@ public class ThaiQRPromptPayTest {
 
         String result = qr.generateContent();
         String[] resultSeparatedByCR = result.split("\n");
+        // Assert Four Parts of Content
         Assert.assertEquals(4, resultSeparatedByCR.length);
+        // Assert Biller ID
         Assert.assertEquals("|000000000009132", resultSeparatedByCR[0]);
+        // Assert Ref 1
         Assert.assertEquals("321312312", resultSeparatedByCR[1]);
+        // Assert Ref 2
         Assert.assertEquals("432542353245", resultSeparatedByCR[2]);
+        // Assert Transaction Amount
         Assert.assertEquals("0", resultSeparatedByCR[3]);
     }
 
@@ -1854,10 +1869,15 @@ public class ThaiQRPromptPayTest {
 
         String result = qr.generateContent();
         String[] resultSeparatedByCR = result.split("\n");
+        // Assert Four Parts of Content
         Assert.assertEquals(4, resultSeparatedByCR.length);
+        // Assert Biller ID
         Assert.assertEquals("|000000000009132", resultSeparatedByCR[0]);
+        // Assert Ref 1
         Assert.assertEquals("321312312", resultSeparatedByCR[1]);
+        // Assert Ref 2
         Assert.assertEquals("", resultSeparatedByCR[2]);
+        // Assert Transaction Amount
         Assert.assertEquals("1100", resultSeparatedByCR[3]);
     }
 
@@ -1872,10 +1892,15 @@ public class ThaiQRPromptPayTest {
 
         String result = qr.generateContent();
         String[] resultSeparatedByCR = result.split("\n");
+        // Assert Four Parts of Content
         Assert.assertEquals(4, resultSeparatedByCR.length);
+        // Assert Biller ID
         Assert.assertEquals("|000000000009132", resultSeparatedByCR[0]);
+        // Assert Ref 1
         Assert.assertEquals("321312312", resultSeparatedByCR[1]);
+        // Assert Ref 2
         Assert.assertEquals("", resultSeparatedByCR[2]);
+        // Assert Transaction Amount
         Assert.assertEquals("0", resultSeparatedByCR[3]);
     }
 
