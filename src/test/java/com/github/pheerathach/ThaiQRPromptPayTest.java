@@ -746,6 +746,7 @@ public class ThaiQRPromptPayTest {
 
         File tmpFile = new File("/tmp/qr-tmp-file.png");
         qr.draw(10, 10, tmpFile);
+        Assert.assertTrue(tmpFile.exists());
     }
 
     @Test(expected = FileNotFoundException.class)
