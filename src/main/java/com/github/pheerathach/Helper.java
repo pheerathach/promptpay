@@ -45,5 +45,14 @@ class Helper {
         if (amount.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalStateException("Amount must be a positive number.");
         }
+        if (countDecimalPlace(amount) > 2) {
+            throw new IllegalStateException("Amount must be in two-digit decimal place format.");
+        }
+    }
+
+    protected static int countDecimalPlace(BigDecimal bigDecimal) {
+        String string = bigDecimal.stripTrailingZeros().toPlainString();
+        int index = string.indexOf('.');
+        return index < 0 ? 0 : string.length() - index - 1;
     }
 }

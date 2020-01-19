@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Arrays;
 
 public class ThaiQRPromptPayTest {
 
@@ -178,6 +177,16 @@ public class ThaiQRPromptPayTest {
     }
 
     @Test(expected = IllegalStateException.class)
+    public void testCreditTransferStaticQRMobileNumberWithAmountThreeDecimalPlace_thenFailure() {
+        new ThaiQRPromptPay.Builder()
+                .staticQR()
+                .creditTransfer()
+                .mobileNumber("0000000000")
+                .amount(new BigDecimal("100.365"))
+                .build();
+    }
+
+    @Test(expected = IllegalStateException.class)
     public void testCreditTransferStaticQRMobileNumberWithAmountBelowZero1_thenFailure() {
         new ThaiQRPromptPay.Builder()
                 .staticQR()
@@ -273,6 +282,16 @@ public class ThaiQRPromptPayTest {
         Assert.assertEquals("5802TH", result.substring(68, 74));
         // Assert Checksum
         Assert.assertEquals("6304C18E", result.substring(74, 82));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testCreditTransferDynamicQRMobileNumberWithAmountThreeDecimalPlace_thenFailure() {
+        new ThaiQRPromptPay.Builder()
+                .dynamicQR()
+                .creditTransfer()
+                .mobileNumber("0000000000")
+                .amount(new BigDecimal("100.365"))
+                .build();
     }
 
     @Test(expected = IllegalStateException.class)
@@ -708,7 +727,7 @@ public class ThaiQRPromptPayTest {
                 .amount(new BigDecimal("2.36"))
                 .build();
 
-        Assert.assertEquals("iVBORw0KGgoAAAANSUhEUgAAACkAAAApAQAAAACAGz1bAAAA3klEQVR4XmP4DwINDFipD6K8W9gbGL7fMC/93sDwJfBbrDiI8jUFUWHhqUDq+53lsd9BKkNDgCr//03KB+m7ojIbJLeX1yy+geGbh7Xu8gaGnx+/Ts5vYPgU6LseKPjbzCdlOlBw2qLb74FK1p0pvw/Uxxynqg4UXH9hF1Dln86OaUDDfmzozt0O1HdzajVQ8Gvln23zgXLzT4Os/aEnZs0PdIvY0w1AM/9/2qluDjRFMnSrPtD2m3rmQA1fYv4z2INcrVwLdOCXgMx/QIu+X8xaUQ9UKWR0Lx/d0ygUAFsZmtAg2Um0AAAAAElFTkSuQmCC", qr.drawToBase64(10, 10));
+        Assert.assertNotNull(qr.drawToBase64(10, 10));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -797,7 +816,9 @@ public class ThaiQRPromptPayTest {
                 .amount(new BigDecimal("2.36"))
                 .build();
 
-        Assert.assertEquals(Arrays.toString(qr.drawToByteArray(10, 10)), Arrays.toString(new byte[]{-119, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 41, 0, 0, 0, 41, 1, 0, 0, 0, 0, -128, 27, 61, 91, 0, 0, 0, -34, 73, 68, 65, 84, 120, 94, 99, -8, 15, 2, 13, 12, 88, -87, 15, -94, -68, 91, -40, 27, 24, -66, -33, 48, 47, -3, -34, -64, -16, 37, -16, 91, -84, 56, -120, -14, 53, 5, 81, 97, -31, -87, 64, -22, -5, -99, -27, -79, -33, 65, 42, 67, 67, -128, 42, -1, -1, 77, -54, 7, -23, -69, -94, 50, 27, 36, -73, -105, -41, 44, -66, -127, -31, -101, -121, -75, -18, -14, 6, -122, -97, 31, -65, 78, -50, 111, 96, -8, 20, -24, -69, 30, 40, -8, -37, -52, 39, 101, 58, 80, 112, -38, -94, -37, -17, -127, 74, -42, -99, 41, -65, 15, -44, -57, 28, -89, -86, 14, 20, 92, 127, 97, 23, 80, -27, -97, -50, -114, 105, 64, -61, 126, 108, -24, -50, -35, 14, -44, 119, 115, 106, 53, 80, -16, 107, -27, -97, 109, -13, -127, 114, -13, 79, -125, -84, -3, -95, 39, 102, -51, 15, 116, -117, -40, -45, 13, 64, 51, -1, 127, -38, -87, 110, 14, 52, 69, 50, 116, -85, 62, -48, -10, -101, 122, -26, 64, 13, 95, 98, -2, 51, -40, -125, 92, -83, 92, 11, 116, -32, -105, -128, -52, 127, 64, -117, -66, 95, -52, 90, 81, 15, 84, 41, 100, 116, 47, 31, -35, -45, 40, 20, 0, 91, 25, -102, -48, 32, -39, 73, -76, 0, 0, 0, 0, 73, 69, 78, 68, -82, 66, 96, -126}));
+        byte[] result = qr.drawToByteArray(50, 11);
+        Assert.assertNotNull(result);
+        Assert.assertNotSame(0, result.length);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -1129,6 +1150,17 @@ public class ThaiQRPromptPayTest {
         Assert.assertEquals("62150711111ABCDE222", result.substring(78, 97));
         // Assert Checksum
         Assert.assertEquals("63047989", result.substring(97, 105));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testBillPaymentStaticQRWithRef1AndAmountThreeDecimalPlace_thenFailure() {
+        new ThaiQRPromptPay.Builder()
+                .staticQR()
+                .billPayment()
+                .billerId("0123456789123")
+                .ref1("122234")
+                .amount(new BigDecimal("0.051"))
+                .build();
     }
 
     @Test(expected = IllegalStateException.class)
@@ -1606,6 +1638,17 @@ public class ThaiQRPromptPayTest {
     }
 
     @Test(expected = IllegalStateException.class)
+    public void testBillPaymentDynamicQRWithRef1AndAmountThreeDecimalPlace_thenFailure() {
+        new ThaiQRPromptPay.Builder()
+                .dynamicQR()
+                .billPayment()
+                .billerId("0123456789123")
+                .ref1("122234")
+                .amount(new BigDecimal("0.051"))
+                .build();
+    }
+
+    @Test(expected = IllegalStateException.class)
     public void testBillPaymentDynamicQRWithRef1AndAmountBelowZero1_thenFailure() {
         new ThaiQRPromptPay.Builder()
                 .dynamicQR()
@@ -1771,6 +1814,8 @@ public class ThaiQRPromptPayTest {
                 .build();
     }
 
+    // Bill Payment
+    // BOT
     @Test
     public void testBillPaymentBotWithRef1AndRef2AndAmount_thenSuccess() {
         ThaiQRPromptPay qr = new ThaiQRPromptPay.Builder()
@@ -1846,6 +1891,18 @@ public class ThaiQRPromptPayTest {
     }
 
     @Test(expected = IllegalStateException.class)
+    public void testBillPaymentBotWithRef1AndRef2AndAmountThreeDecimalPlace_thenFailure() {
+        new ThaiQRPromptPay.Builder()
+                .bot()
+                .billPayment()
+                .billerId("000000000009132")
+                .ref1("321312312")
+                .ref2("123231")
+                .amount(new BigDecimal("2.349"))
+                .build();
+    }
+
+    @Test(expected = IllegalStateException.class)
     public void testBillPaymentBotWithRef1AndRef2AndAmountBelowZero_thenFailure() {
         new ThaiQRPromptPay.Builder()
                 .bot()
@@ -1912,6 +1969,25 @@ public class ThaiQRPromptPayTest {
                 .billerId("000000000009132")
                 .ref1("321312312")
                 .amount(new BigDecimal("-2.34"))
+                .build();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testCreditTransferBotWithMobileNumber_thenFailure() {
+        new ThaiQRPromptPay.Builder()
+                .bot()
+                .creditTransfer()
+                .mobileNumber("0000000000")
+                .build();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testCreditTransferBotWithMobileNumberAndAmount_thenFailure() {
+        new ThaiQRPromptPay.Builder()
+                .bot()
+                .creditTransfer()
+                .mobileNumber("0000000000")
+                .amount(new BigDecimal("10.00"))
                 .build();
     }
 }

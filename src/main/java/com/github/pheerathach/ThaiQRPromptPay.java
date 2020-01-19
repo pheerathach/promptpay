@@ -45,7 +45,7 @@ public class ThaiQRPromptPay {
             this.nationalId = creditTransferBuilder.nationalId;
             this.eWalletId = creditTransferBuilder.eWalletId;
             this.amount = creditTransferBuilder.amount;
-            this.outputType = OutputType.TAG30;
+            this.outputType = OutputType.PROMPTPAY;
         } else {
             this.paymentField = BILL_PAYMENT_DATA_FIELD_ID;
             this.acquirerId = BILL_PAYMENT_DATA_ACQUIRER_ID;
@@ -71,7 +71,7 @@ public class ThaiQRPromptPay {
         switch (outputType) {
             case BOT3:
                 return generateBOT();
-            case TAG30:
+            case PROMPTPAY:
             default:
                 return generatePromptPayQR();
         }
@@ -148,7 +148,7 @@ public class ThaiQRPromptPay {
     }
 
     public enum OutputType {
-        BOT3, TAG30
+        BOT3, PROMPTPAY
     }
 
     /**
@@ -210,7 +210,7 @@ public class ThaiQRPromptPay {
         protected String currencyCode = DEFAULT_CURRENCY_CODE;
         protected String countryCode = DEFAULT_COUNTRY_CODE;
         protected SelectPromptPayTypeBuilder selectPromptPayTypeBuilder = new SelectPromptPayTypeBuilder();
-        protected OutputType outputType = OutputType.TAG30;
+        protected OutputType outputType = OutputType.PROMPTPAY;
 
         /**
          * Specify currency code
@@ -239,13 +239,13 @@ public class ThaiQRPromptPay {
 
         public SelectPromptPayTypeBuilder staticQR() {
             this.usageType = STATIC_QR_CODE;
-            this.outputType = OutputType.TAG30;
+            this.outputType = OutputType.PROMPTPAY;
             return selectPromptPayTypeBuilder;
         }
 
         public SelectPromptPayTypeBuilder dynamicQR() {
             this.usageType = DYNAMIC_QR_CODE;
-            this.outputType = OutputType.TAG30;
+            this.outputType = OutputType.PROMPTPAY;
             return selectPromptPayTypeBuilder;
         }
 
@@ -300,6 +300,9 @@ public class ThaiQRPromptPay {
             }
 
             public CreditTransferBuilderIdentifier creditTransfer() {
+                if (outputType != OutputType.PROMPTPAY) {
+                    throw new IllegalStateException("Credit Transfer is only reserved for PromptPay QR.");
+                }
                 CreditTransferBuilder creditTransferBuilder = new CreditTransferBuilder();
                 this.selectPromptPayType = creditTransferBuilder;
                 return creditTransferBuilder;
@@ -354,7 +357,9 @@ public class ThaiQRPromptPay {
                  */
                 @Override
                 public BuildReady amount(BigDecimal amount) {
+                    validateLength("Amount", MONEY_FORMAT.format(amount), 13);
                     validateAmount(amount);
+                    amount = amount.setScale(2, RoundingMode.DOWN);
                     this.amount = amount;
                     return this;
                 }
@@ -437,6 +442,7 @@ public class ThaiQRPromptPay {
                 public BillPaymentBuilderOptionalDetail amount(BigDecimal amount) {
                     validateLength("Amount", MONEY_FORMAT.format(amount), 13);
                     validateAmount(amount);
+                    amount = amount.setScale(2, RoundingMode.DOWN);
                     this.amount = amount;
                     return this;
                 }
