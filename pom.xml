@@ -96,7 +96,7 @@
         <connection>scm:git:https://github.com/pheerathach/promptpay.git</connection>
         <developerConnection>scm:git:https://github.com/pheerathach/promptpay.git</developerConnection>
         <url>https://github.com/pheerathach/promptpay</url>
-        <tag>HEAD</tag>
+        <tag>promptpay-1.0.1</tag>
     </scm>
 
     <developers>
