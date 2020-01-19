@@ -50,6 +50,14 @@ ThaiQRPromptPay qr = new ThaiQRPromptPay.Builder().dynamicQR().billPayment().bil
 
 ```
 
+3. QR สำหรับธุรกิจรับชำระเงิน (Bill Payment) ตามมาตรฐานเดิมของธปท.
+
+```java
+// รับชำระแบบ Bill Payment เดิมตามธปท. เลขประจำตัวผู้เสียภาษี 0000000000000 + 99 (SUFFIX 2 หลัก)
+// รหัสอ้างอิง 1: 15123141 รหัสอ้างอิง 2: 3654112 จำนวนเงิน: <ให้ผู้ชำระระบุ>
+ThaiQRPromptPay qr = new ThaiQRPromptPay.Builder().bot().billPayment().billerId("000000000000099").ref1("15123141").ref2("3654112").build();
+```
+
 # ข้อพึงสังเกต
 - QR ที่ถูกสร้างขึ้นเพื่อให้ใช้ได้หลายครั้ง คือ staticQR()
 - QR ที่ถูกสร้างขึ้นเพื่อให้ใช้ได้แค่ครั้งเดียว คือ dynamicQR()
