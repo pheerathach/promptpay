@@ -70,23 +70,23 @@ ThaiQRPromptPay qr = new ThaiQRPromptPay.Builder().dynamicQR().billPayment().bil
 ```java
 ThaiQRPromptPay qr = new ThaiQRPromptPay.Builder().dynamicQR().creditTransfer().mobileNumber("0812345678").amount(new BigDecimal("100.00")).build();
 ```
-1.1. หากต้องการเนื้อหาสำหรับนำไปสร้างรูป QR
+2.1. หากต้องการเนื้อหาสำหรับนำไปสร้างรูป QR
 ```java
 StringBuilder content = qr.generateContent();
 ```
-1.2. หากต้องการให้ไลบรารีสร้างรูป QR ให้
+2.2. หากต้องการให้ไลบรารีสร้างรูป QR ให้
 
-  1.2.1. เป็นไฟล์ PNG
+  2.2.1. เป็นไฟล์ PNG
 ```java
 qr.draw(300, 300, new File("D:\\qr.png")); // width 300 x height 300 pixels | save to D:\qr.png
 ```
 
-  1.2.2. เป็น Base64 String (PNG)
+  2.2.2. เป็น Base64 String (PNG)
 ```java
 qr.drawToBase64(300, 300); // width 300 x height 300 pixels
 ```
 
-  1.2.3. เป็น byte[]
+  2.2.3. เป็น byte[]
 ```java
 qr.drawToByteArray(400, 400); // width 400 x height 400 pixels
 ```
