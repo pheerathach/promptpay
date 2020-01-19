@@ -55,7 +55,18 @@ ThaiQRPromptPay qr = new ThaiQRPromptPay.Builder().dynamicQR().billPayment().bil
 - QR ที่ถูกสร้างขึ้นเพื่อให้ใช้ได้แค่ครั้งเดียว คือ dynamicQR()
 
 # วิธีนำไปใช้
-1. เรียกใช้ไลบรารี
+1. นำเข้าไลบรารีผ่าน Maven โดยเพิ่มโค้ดดังกล่าวใน pom.xml
+```
+<dependencies>
+...
+		<dependency>
+			<groupId>com.github.pheerathach</groupId>
+			<artifactId>promptpay</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+</dependencies>
+```
+2. เรียกใช้ไลบรารี
 ```java
 ThaiQRPromptPay qr = new ThaiQRPromptPay.Builder().dynamicQR().creditTransfer().mobileNumber("0812345678").amount(new BigDecimal("100.00")).build();
 ```
