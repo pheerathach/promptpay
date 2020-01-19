@@ -62,7 +62,7 @@ ThaiQRPromptPay qr = new ThaiQRPromptPay.Builder().dynamicQR().billPayment().bil
 		<dependency>
 			<groupId>com.github.pheerathach</groupId>
 			<artifactId>promptpay</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 </dependencies>
 ```
