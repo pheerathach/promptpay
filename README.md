@@ -80,7 +80,7 @@ ThaiQRPromptPay qr = new ThaiQRPromptPay.Builder().dynamicQR().creditTransfer().
 ```
 2.1. หากต้องการเนื้อหาสำหรับนำไปสร้างรูป QR
 ```java
-StringBuilder content = qr.generateContent();
+String content = qr.generateContent();
 ```
 2.2. หากต้องการให้ไลบรารีสร้างรูป QR ให้
 
