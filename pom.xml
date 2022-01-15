@@ -4,7 +4,7 @@
 
     <groupId>com.github.pheerathach</groupId>
     <artifactId>promptpay</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
 
     <name>Thai QR PromptPay Generator</name>
     <description>
