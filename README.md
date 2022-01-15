@@ -70,7 +70,7 @@ ThaiQRPromptPay qr = new ThaiQRPromptPay.Builder().bot().billPayment().billerId(
 		<dependency>
 			<groupId>com.github.pheerathach</groupId>
 			<artifactId>promptpay</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2</version>
 		</dependency>
 </dependencies>
 ```
