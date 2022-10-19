@@ -1,5 +1,7 @@
 # Thai QR PromptPay Generator
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/51564ca097fa4cbba46e34ecacd813e7)](https://www.codacy.com/gh/pheerathach/promptpay/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=pheerathach/promptpay&amp;utm_campaign=Badge_Grade)
+
 ไลบรารีช่วยสร้าง QR สำหรับรับชำระเงินด้วย PromptPay โดยสามารถสร้าง
 1. QR สำหรับบุคคลธรรมดารับโอนเงิน (Credit Transfer)
 2. QR สำหรับธุรกิจรับชำระเงิน (Bill Payment)
